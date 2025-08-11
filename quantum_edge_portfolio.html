@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nayan Wagle </title>
+<meta name="description" content="Single-file, editable HTML+CSS portfolio for Nayan Wagle — high-polish, animated, and easily editable without JS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* -----------------------------
+   Quantum Edge — Editable
+   - To edit quickly: 1) double-click any text (contenteditable areas)
+                     2) open CSS :root variables below to tweak colors, spacing, radii
+   - No JavaScript. Pure HTML + CSS.
+   -----------------------------*/
+
+/* reset */
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+
+:root{
+  /* quick theme & layout knobs — edit these to rebrand in seconds */
+  --bg-start: #020617; /* deep */
+  --bg-end:   #071021; /* deep */
+  --accent1:  #7c3aed; /* primary */
+  --accent2:  #06b6d4; /* secondary */
+  --accent3:  #f59e0b; /* accent */
+  --muted:    #9aa6b2;
+  --text:     #e6eef8;
+  --glass:    rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.06);
+  --container:1100px;
+  --radius: 14px;
+  --blur: 10px;
+}
+
+body{
+  background: radial-gradient(700px 300px at 8% 12%, rgba(124,58,237,0.08), transparent 8%),
+              radial-gradient(700px 300px at 92% 82%, rgba(6,182,212,0.06), transparent 10%),
+              linear-gradient(180deg,var(--bg-start),var(--bg-end));
+  color:var(--text);
+  min-height:100vh;
+  padding:6rem 1.25rem 3.25rem;
+}
+
+.container{max-width:var(--container);margin:0 auto}
+.header{position:fixed;left:50%;transform:translateX(-50%);top:18px;width:calc(100% - 48px);max-width:var(--container);display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.9rem;border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid var(--glass-border);backdrop-filter: blur(var(--blur));box-shadow: 0 6px 20px rgba(2,6,23,0.6);z-index:50}
+.logo{display:flex;align-items:center;gap:.7rem;text-decoration:none;color:var(--text)}
+.logo .mark{width:42px;height:42px;border-radius:9px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-family:"JetBrains Mono",monospace}
+.logo .title{font-weight:700}
+.nav{display:flex;gap:.6rem;align-items:center}
+.nav a{color:var(--muted);text-decoration:none;padding:.45rem .6rem;border-radius:9px;font-weight:600;font-size:.95rem}
+.action{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;padding:.45rem .7rem;border-radius:10px;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(12,18,45,0.6)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 420px;gap:2.2rem;align-items:center;margin-top:3.2rem}
+@media (max-width:880px){.hero{grid-template-columns:1fr;padding-top:3.2rem}.header{top:12px}}
+.hero-card{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid var(--glass-border);padding:2.2rem;border-radius:18px;box-shadow: 0 14px 30px rgba(2,6,23,0.6)}
+.h1{font-size:clamp(28px, 4.8vw, 44px);margin:0 0 .5rem;line-height:1.02;font-weight:800;letter-spacing:-1px}
+.h1 .accent{background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);margin:0 0 1.6rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.chip{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:.45rem .7rem;border-radius:999px;font-weight:600;color:var(--muted);font-size:.85rem}
+
+/* profile card */
+.profile{padding:1.6rem;border-radius:14px;display:flex;flex-direction:column;gap:1rem;align-items:center;text-align:center}
+.avatar{width:120px;height:120px;border-radius:20px;background:linear-gradient(180deg,var(--accent1),var(--accent2));display:inline-grid;place-items:center;font-size:34px;font-weight:800;color:white;box-shadow:0 10px 30px rgba(12,18,45,0.6)}
+.small{color:var(--muted);font-size:.92rem}
+.stats{display:flex;gap:1rem;width:100%;justify-content:space-between}
+.stat{background:rgba(255,255,255,0.02);padding:.6rem .8rem;border-radius:10px;min-width:48%}
+
+/* shimmering underline animation for links */
+a.underline{position:relative;text-decoration:none}
+a.underline::after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:3px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.2,.9,.25,1)}
+a.underline:hover::after{transform:scaleX(1)}
+
+/* project grid */
+.section{margin-top:1.8rem}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.card{border-radius:14px;padding:1.25rem;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;gap:.7rem;border:1px solid var(--glass-border);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));transition:transform .28s cubic-bezier(.2,.9,.25,1),box-shadow .28s}
+.card:hover{transform:translateY(-10px) rotate(-.2deg);box-shadow:0 28px 60px rgba(2,6,23,0.7)}
+.card .title{font-weight:800}
+.card .desc{font-size:.95rem;color:var(--muted);margin-top:.35rem}
+.tags{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem}
+.tag{background:rgba(255,255,255,0.02);padding:.32rem .6rem;border-radius:999px;font-size:.8rem;color:var(--muted)}
+
+/* floating decorative shapes (pure css) */
+.shape{position:fixed;z-index:0;filter:blur(36px);opacity:.28;mix-blend-mode:screen}
+.shape.s1{width:420px;height:240px;left:-80px;top:40%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:48%}
+.shape.s2{width:360px;height:200px;right:-60px;bottom:10%;background:linear-gradient(135deg,var(--accent2),var(--accent3));border-radius:46%}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}
+.shape{animation:floaty 9s ease-in-out infinite}
+
+/* skills */
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+@media (max-width:880px){.skills{grid-template-columns:1fr}}
+.skill{display:flex;flex-direction:column;gap:.4rem}
+.progress{height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent1));border-radius:999px;transform-origin:left;transition:width .9s cubic-bezier(.2,.9,.25,1)}
+
+/* contact */
+.contact{display:flex;gap:1rem;align-items:center;justify-content:space-between;padding:1.2rem;border-radius:12px}
+@media (max-width:660px){.contact{flex-direction:column;align-items:stretch}}
+
+.footer{margin-top:2.2rem;text-align:center;color:var(--muted);font-size:.9rem;opacity:.95}
+
+/* editable hint */
+[contenteditable]{outline:none;border-radius:6px}
+[contenteditable]:focus{box-shadow:0 6px 24px rgba(7,10,21,0.6);background:rgba(255,255,255,0.012);}
+.edit-hint{font-size:.82rem;color:var(--muted);margin-top:.6rem}
+
+/* accessibility focus */
+a:focus,button:focus{outline:3px solid rgba(124,58,237,0.12);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media print{body{background:white;color:black;padding:0}.header,.nav,.action,.avatar,.shape{display:none}.container{max-width:800px}.card{box-shadow:none;border:none;background:transparent}a::after{content:" (" attr(href) ")"}}
+</style>
+</head>
+<body>
+  <!-- Decorative shapes (pure CSS) -->
+  <div class="shape s1" aria-hidden="true"></div>
+  <div class="shape s2" aria-hidden="true"></div>
+
+  <header class="header container" role="banner">
+    <a href="#top" class="logo" aria-label="Portfolio home">
+      <span class="mark">NW</span>
+      <div class="title">
+        <div style="font-size:.9rem; color:var(--muted)">Nayan Wagle</div>
+        <div style="font-size:.75rem; margin-top:2px">B.Ed student</div>
+      </div>
+    </a>
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+      <a href="#projects">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact" class="action">Let's connect</a>
+    </nav>
+  </header>
+
+  <main class="container" id="top" role="main">
+    <section class="hero" aria-label="Hero introduction">
+      <div class="hero-card">
+        <div>
+          <h1 class="h1">Hey — I'm <span class="accent" contenteditable="true">Nayan Wagle</span>.<br> Linking World With New Horizon</h1>
+          <p class="lead" contenteditable="true">Education student & Video editor — I blend classroom experience with  Brainstorming.By using my collections of Article relating with different aspects </p>
+          <div class="meta" aria-hidden="false">
+            <span class="chip">Animator • Digital artist </span>
+            <span class="chip">Research • Accessibility</span>
+            <span class="chip">Performance</span>
+          </div>
+          <div style="margin-top:1.25rem">
+            <a href="#projects" class="action" style="text-decoration:none">View Work</a>
+            <a href="#contact" class="underline" style="margin-left:.6rem; text-decoration:none; color:var(--muted); font-weight:700">Contact</a>
+          </div>
+          <div class="edit-hint">______________________________________Keep scrolling___________________________________</div>
+        </div>
+      </div>
+
+      <aside class="hero-card profile" aria-label="Profile card">
+        <div class="avatar" aria-hidden="true">NW</div>
+        <div>
+          <div style="font-weight:800" contenteditable="true">Nayan Wagle</div>
+          <div class="small" contenteditable="true">B.Ed Student • Video editor</div>
+        </div>
+
+        <div class="stats" role="list">
+          <div class="stat" role="listitem">
+            <div style="font-weight:700" contenteditable="true">100+</div>
+            <div class="small">Projects</div>
+          </div>
+          <div class="stat" role="listitem">
+            <div style="font-weight:700" contenteditable="true">50+</div>
+            <div class="small">Skills</div>
+          </div>
+        </div>
+
+        <div style="width:100%; margin-top:6px">
+          <a href="#contact" class="action" style="display:inline-block; text-align:center; width:100%">Hire / Collaborate</a>
+        </div>
+      </aside>
+    </section>
+
+    <section id="projects" class="section" aria-labelledby="projects-title">
+      <div class="section-title">
+        <h3 id="projects-title">Selected Projects</h3>
+        <div class="kicker">Latest work</div>
+      </div>
+
+      <div class="grid" role="list">
+        <article class="card" role="listitem">
+          <div>
+            <div class="title" contenteditable="true">EduStar — Learning Platform</div>
+            <div class="desc" contenteditable="true">A modular, mobile and web-first learning dashboard with performance analytics and offline-first focus.</div>
+            <div class="tags"><span class="tag">Education</span><span class="tag">Resarch</span><span class="tag">Accessibility</span></div>
+          </div>
+          <div style="display:flex; gap:.6rem; align-items:center; justify-content:space-between;">
+            <div style="font-size:.9rem; color:var(--muted)">CSS-only UI, progressive enhancements</div>
+            <a href="#contact" class="action" style="padding:.38rem .6rem; font-size:.88rem">Talk</a>
+          </div>
+        </article>
+
+        <article class="card" role="listitem">
+          <div>
+            <div class="title" contenteditable="true">OpenAi Study Components/ Gpt's</div>
+            <div class="desc" contenteditable="true">Tiny accessible Gpt inside ChatGPT   for learning — focusable, kid-friendly, and accurate.</div>
+            <div class="tags"><span class="tag">AI</span><span class="tag">Closed Source</span></div>
+          </div>
+          <div style="display:flex; gap:.6rem; align-items:center; justify-content:space-between;">
+            <div style="font-size:.9rem; color:var(--muted)">Docs + examples included</div>
+            <a href="#contact" class="action" style="padding:.38rem .6rem; font-size:.88rem">Get in touch</a>
+          </div>
+        </article>
+
+        <article class="card" role="listitem">
+          <div>
+            <div class="title" contenteditable="true">Large Online library: Learning Biases</div>
+            <div class="desc" contenteditable="true">Research and learning will be even better in the future by using our large library source. the library managed by our team not only find what you are looking for, but the most accurate AI chatbot can help you with your problems. To get a demo, request now and dont miss the chance.</div>
+            <div class="tags"><span class="tag">Research</span><span class="tag">Data</span></div>
+          </div>
+          <div style="display:flex; gap:.6rem; align-items:center; justify-content:space-between;">
+            <div style="font-size:.9rem; color:var(--muted)">Download on request</div>
+            <a href="#contact" class="action" style="padding:.38rem .6rem; font-size:.88rem">Request</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="about" class="section" aria-labelledby="about-title">
+      <div class="section-title">
+        <h3 id="about-title">About</h3>
+        <div class="kicker">Who am I</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 320px; gap:1rem; margin-top:1rem">
+        <div class="hero-card" style="padding:1.6rem">
+          <p style="margin:0 0 .8rem" contenteditable="true">Strategic thinker who blends classroom experience with brainstorming. I design learning flows, build reseilent ideas, and translate research into usable features with AI.</p>
+          <p style="color:var(--muted); margin:0" contenteditable="true"></p>
+
+          <div class="skills" style="margin-top:1.1rem">
+            <div>
+              <div class="skill"><div style="font-weight:700">HTML & CSS</div><div class="progress" aria-hidden="true"><i style="width:92%"></i></div></div>
+              <div class="skill"><div style="font-weight:700">Accessibility</div><div class="progress" aria-hidden="true"><i style="width:84%"></i></div></div>
+              <div class="skill"><div style="font-weight:700">Responsiveness</div><div class="progress" aria-hidden="true"><i style="width:88%"></i></div></div>
+            </div>
+
+            <div>
+              <div class="skill"><div style="font-weight:700">Research Methods</div><div class="progress" aria-hidden="true"><i style="width:78%"></i></div></div>
+              <div class="skill"><div style="font-weight:700">AI chatbot developing</div><div class="progress" aria-hidden="true"><i style="width:74%"></i></div></div>
+              <div class="skill"><div style="font-weight:700">Collaboration</div><div class="progress" aria-hidden="true"><i style="width:82%"></i></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card" style="padding:1rem">
+          <div style="display:flex; flex-direction:column; gap:.8rem">
+            <div style="display:flex; gap:.6rem; align-items:center; justify-content:space-between">
+              <div><strong>Contact</strong><div class="small" style="color:var(--muted); margin-top:2px">Let's make something useful together</div></div>
+            </div>
+
+            <div style="display:flex; gap:.6rem; flex-direction:column; margin-top:.4rem">
+              <a href="mailto:nayan.wagle@example.com" class="chip" style="text-decoration:none; display:inline-block; width:100%; text-align:center" contenteditable="true">nayanwagley214@gmail.com</a>
+              <a href="#" class="chip" style="text-decoration:none; display:inline-block; width:100%; text-align:center" contenteditable="true">Instagram: krazyy.nayan</a>
+              <a href="#resume" class="chip" style="text-decoration:none; display:inline-block; width:100%; text-align:center">More info?</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section" aria-labelledby="contact-title">
+      <div class="section-title">
+        <h3 id="contact-title">Contact & Resume</h3>
+        <div class="kicker">Ready to collab?</div>
+      </div>
+
+      <div class="hero-card" style="margin-top:1rem; display:flex; gap:1rem; flex-direction:column">
+        <p style="margin:0">Contact me via below links and lets make the world bloom now flowers again.</p>
+
+        <div class="contact" style="margin-top:.6rem">
+          <div>
+            <div style="font-weight:800" contenteditable="true">Nayan Wagle</div>
+            <div style="color:var(--muted)" contenteditable="true">nayanwagley214@gmail.com</div>
+          </div>
+
+          <div style="display:flex; gap:.6rem;">
+            <a href="mailto:nayanwagley214@gmail.com" class="action" style="padding:.45rem .6rem">Email</a>
+            <a href="#" class="chip" style="display:flex; align-items:center; padding:.45rem .6rem">Download CV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      BUILT WITH ❤️BY NAYAN WAGLE — JAYA NEPAL.
+    </footer>
+  </main>
+</body>
+</html>
