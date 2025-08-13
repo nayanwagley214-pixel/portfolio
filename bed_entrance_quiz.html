@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>B.Ed Entrance – Practice Exam (English • Nepali • GK • Math)</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#111836; --ink:#e6eef8; --muted:#9aa6b2; --green:#16a34a; --red:#ef4444; --accent:#7c3aed;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; background:linear-gradient(180deg,#070b18,#0b1020); color:var(--ink);}
+  .wrap{max-width:900px;margin:40px auto;padding:20px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px; box-shadow:0 12px 30px rgba(2,6,23,.5)}
+  h1{margin:0 0 10px; font-size:clamp(22px,4vw,32px)}
+  p.muted{color:var(--muted); margin:4px 0 16px}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 18px}
+  button,.btn{background:linear-gradient(90deg,#7c3aed,#06b6d4); color:#fff; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer}
+  button[disabled]{opacity:.6; cursor:not-allowed}
+  select,.num{background:rgba(255,255,255,.06); color:var(--ink); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:10px;}
+
+  /* questions */
+  .q{border-top:1px solid rgba(255,255,255,.08); padding-top:14px; margin-top:14px}
+  .q:first-of-type{border-top:none; padding-top:0; margin-top:0}
+  .q-title{font-weight:700; margin-bottom:6px}
+  .opts{display:grid; gap:8px; margin-top:8px}
+  .opt{display:flex; gap:10px; align-items:center; background:rgba(255,255,255,.04); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.06)}
+  .opt input{accent-color:#7c3aed}
+  .pill{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,.06); color:var(--muted); margin-left:8px}
+
+  /* result states */
+  .q.correct{border-left:4px solid var(--green); padding-left:14px}
+  .q.incorrect{border-left:4px solid var(--red); padding-left:14px}
+  .answer{margin-top:8px; font-size:14px}
+  .answer .ok{color:var(--green); font-weight:700}
+  .answer .bad{color:var(--red); font-weight:700}
+
+  /* footer actions */
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+
+  /* popup modal */
+  .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.6); padding:20px}
+  .modal.open{display:grid}
+  .modal .box{max-width:420px; width:100%; background:var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:18px; text-align:center}
+  .score{font-size:38px; font-weight:800; margin:6px 0}
+
+  /* print */
+  @media print{.controls,.actions,.modal{display:none!important}; .wrap{margin:0}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>B.Ed Entrance – Practice Exam</h1>
+      <p class="muted">Subjects: English, Nepali, General Knowledge, Easy Math. Questions and options shuffle every run.</p>
+
+      <div class="controls">
+        <label>Questions: <input class="num" id="numQ" type="number" min="5" max="20" step="1" value="10" style="width:80px"></label>
+        <label>Mix:
+          <select id="mix">
+            <option value="mixed">Mixed (all subjects)</option>
+            <option value="English">English</option>
+            <option value="Nepali">Nepali</option>
+            <option value="GK">GK</option>
+            <option value="Math">Math</option>
+          </select>
+        </label>
+        <button id="start">Start Exam</button>
+      </div>
+
+      <form id="exam" aria-live="polite"></form>
+
+      <div class="actions">
+        <button id="submit" disabled>Submit</button>
+        <button id="again" type="button">New Exam</button>
+        <span class="pill" id="status">idle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Popup -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <div style="font-weight:700">Your Score</div>
+      <div class="score" id="score">0 / 0</div>
+      <div class="muted" id="remark">Keep practicing and retake.</div>
+      <div class="actions" style="justify-content:center">
+        <button id="closeModal" type="button">Close</button>
+        <button id="retake" type="button">Retake</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ====== Data: small, clean question bank (extend easily) ======
+const BANK = [
+  // English (4)
+  {id:'en1', s:'English', q:'Choose the correctly spelled word:', opts:['Recieve','Receive','Recive','Receeve'], a:1},
+  {id:'en2', s:'English', q:'Pick the correct synonym of "rapid":', opts:['Slow','Swift','Late','Idle'], a:1},
+  {id:'en3', s:'English', q:'Identify the preposition: "She sat under the tree."', opts:['sat','under','the','tree'], a:1},
+  {id:'en4', s:'English', q:'Choose the correct article: "___ honest person"', opts:['A','An','The','No article'], a:1},
+  // Nepali (4)
+  {id:'ne1', s:'Nepali', q:'"विद्यालय" को अर्थ के हो?', opts:['हात','घर','स्कूल','खेल'], a:2},
+  {id:'ne2', s:'Nepali', q:'"सुन्दर" को विलोम शब्द:', opts:['सुगम','कुरूप','नम्र','सस्तो'], a:1},
+  {id:'ne3', s:'Nepali', q:'"हिजो" कुन काल हो?', opts:['भूत','वर्तमान','भविष्य','सहायक'], a:0},
+  {id:'ne4', s:'Nepali', q:'"मेरो नाम नयन हो" — वाक्यको कर्ता कुन हो?', opts:['नाम','मेरो','नयन','हो'], a:2},
+  // GK (4)
+  {id:'gk1', s:'GK', q:'Capital of Nepal?', opts:['Pokhara','Kathmandu','Lalitpur','Biratnagar'], a:1},
+  {id:'gk2', s:'GK', q:'Mount Everest lies in the range:', opts:['Andes','Himalayas','Alps','Rockies'], a:1},
+  {id:'gk3', s:'GK', q:'SAARC was founded in:', opts:['1985','1995','1975','2005'], a:0},
+  {id:'gk4', s:'GK', q:'Who wrote "Muna Madan"?', opts:['Bhanubhakta','Laxmi Prasad Devkota','Parijat','Madan Bhandari'], a:1},
+  // Math (4)
+  {id:'ma1', s:'Math', q:'12 + 15 = ?', opts:['25','26','27','28'], a:2},
+  {id:'ma2', s:'Math', q:'Value of 9 × 6 = ?', opts:['54','45','36','64'], a:0},
+  {id:'ma3', s:'Math', q:'Simplify: 3/4 + 1/4 = ?', opts:['1/2','1','3/4','2/4'], a:1},
+  {id:'ma4', s:'Math', q:'Square of 13 is:', opts:['144','156','169','196'], a:2},
+];
+
+// ====== Helpers ======
+const $ = (q,root=document)=>root.querySelector(q);
+const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
+const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+
+function pickQuestions(n, subject){
+  let pool = subject==='mixed' ? BANK : BANK.filter(x=>x.s===subject);
+  pool = shuffle(pool).slice(0, Math.min(n, pool.length));
+  // also shuffle options per question & remap answer index
+  return pool.map(q => {
+    const entries = q.opts.map((t,i)=>({t, i}));
+    const shuffled = shuffle(entries);
+    const newOpts = shuffled.map(o=>o.t);
+    const newA = shuffled.findIndex(o=>o.i===q.a);
+    return {...q, opts:newOpts, a:newA};
+  });
+}
+
+// ====== Render ======
+function renderExam(questions){
+  const form = $('#exam');
+  form.innerHTML = '';
+  questions.forEach((q,idx)=>{
+    const block = document.createElement('fieldset');
+    block.className = 'q';
+    block.dataset.qid = q.id;
+    const legend = document.createElement('legend');
+    legend.className = 'q-title';
+    legend.innerHTML = `${idx+1}. ${q.q} <span class="pill">${q.s}</span>`;
+    block.appendChild(legend);
+    const opts = document.createElement('div');
+    opts.className = 'opts';
+    q.opts.forEach((opt,optIdx)=>{
+      const id = `${q.id}_${optIdx}`;
+      const label = document.createElement('label');
+      label.className = 'opt';
+      label.setAttribute('for', id);
+      label.innerHTML = `<input type="radio" name="${q.id}" id="${id}" value="${optIdx}"> <span>${opt}</span>`;
+      opts.appendChild(label);
+    });
+    block.appendChild(opts);
+    form.appendChild(block);
+  });
+}
+
+// ====== Grade ======
+function grade(questions){
+  let correct = 0;
+  questions.forEach(q=>{
+    const chosen = $(`input[name="${q.id}"]:checked`);
+    const block = $(`.q[data-qid="${q.id}"]`);
+    const chosenIdx = chosen ? Number(chosen.value) : -1;
+    const correctText = q.opts[q.a];
+    const userText = chosenIdx>=0 ? q.opts[chosenIdx] : '—';
+
+    if(chosenIdx === q.a){
+      correct++;
+      block.classList.add('correct');
+      const note = document.createElement('div');
+      note.className = 'answer';
+      note.innerHTML = `<span class="ok">Correct:</span> ${correctText}`;
+      block.appendChild(note);
+    } else {
+      block.classList.add('incorrect');
+      const note = document.createElement('div');
+      note.className = 'answer';
+      note.innerHTML = `<span class="bad">Incorrect.</span> Your answer: ${userText}. Correct: <span class="ok">${correctText}</span>`;
+      block.appendChild(note);
+    }
+
+    // lock options after grading
+    $$('input', block).forEach(i=>i.disabled=true);
+  });
+  return correct;
+}
+
+// ====== UI Flow ======
+let CURRENT = [];
+
+function startExam(){
+  const n = Math.max(5, Math.min(20, Number($('#numQ').value)||10));
+  const subject = $('#mix').value;
+  CURRENT = pickQuestions(n, subject);
+  renderExam(CURRENT);
+  $('#submit').disabled = false;
+  $('#status').textContent = `exam: ${n} Q • ${subject}`;
+}
+
+function newExam(){ startExam(); }
+
+function submitExam(e){
+  e.preventDefault();
+  if(!CURRENT.length) return;
+  $('#submit').disabled = true;
+  const score = grade(CURRENT);
+  // popup
+  const modal = $('#modal');
+  $('#score').textContent = `${score} / ${CURRENT.length}`;
+  const pct = Math.round((score/CURRENT.length)*100);
+  $('#remark').textContent = pct>=80? 'Clean work! You’re exam-ready.' : pct>=60? 'Decent — one more round.' : 'Keep grinding — retake now.';
+  modal.classList.add('open');
+}
+
+// events
+$('#start').addEventListener('click', startExam);
+$('#again').addEventListener('click', newExam);
+$('#submit').addEventListener('click', submitExam);
+$('#closeModal').addEventListener('click', ()=>$('#modal').classList.remove('open'));
+$('#retake').addEventListener('click', ()=>{ $('#modal').classList.remove('open'); startExam(); });
+
+// auto-start on load with mixed 10
+startExam();
+</script>
+</body>
+</html>
